@@ -69,13 +69,21 @@ def stations():
         station_data_dict = {}
         station_data_dict["name"] = name
         all_stations.append(station_data_dict)
-    return jsonify (station_data)
+    return jsonify (all_stations)
 
-#Temperature route
-# @app.route("/api/v1.0/tobs")
-# def tobs():
+# #Temperature route
+@app.route("/api/v1.0/tobs")
+def tobs():
+    last_twelve_months = dt.datetime(2017, 8, 23) - dt.timedelta(days=365)
+    temp_data = session.query(Measurement.date,Measurement.tobs).filter(Measurement.date >= last_twelve_months).all()
 
-
+    all_temps = []
+    for tobs in temp_data:
+        temp_data_dict = {}
+        temp_data_dict["date"] = date
+        temp_data_dict["tobs"] = tobs
+        all_temps.append(temp_data_dict)
+    return jsonify (all_temps)
 
 # @app.route("/api/v1.0/tobs")
 
@@ -83,22 +91,6 @@ def stations():
 
 
 # <Start> route
-
-# @app.route("/api/v1.0/<start>")
-# def tstart(start):
-#     # check date format for start date
-#     try:
-#         dt.datetime.strptime(start, '%Y-%m-%d')
-#     except ValueError:
-#         return (f"Incorrect start date format, should be YYYY-MM-DD<br/>"
-#                 f"If you are not looking for a dated endpoint, check your spelling"), 404
-#     # get database query and return
-#     response = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(Measurement.date >= start).first()
-#     respdict = {'TMIN':response[0],
-#                 'TAVG':response[1],
-#                 'TMAX':response[2]}
-#     session.close()
-#     return jsonify(respdict)
 
 
 
