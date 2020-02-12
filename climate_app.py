@@ -48,53 +48,33 @@ def home():
 
 #Precipitation route
 @app.route("/api/v1.0/precipitation")
-def precipitation():
-    precipdict = {}
-    response = session.query(Measurement.date,Measurement.prcp).all()
-    for record in response:
-        recdict = {record.date: record.prcp}
-        precipdict.update(recdict)
-    session.close()
-    return jsonify(precipdict)
+def prcp():
+    prcp_data = session.query(Measurement.date,Measurement.prcp).all()
 
-
-
-    # precipitation_data = session.query(Measurement.date, Measurement.prcp).all()
-    # last_twelve_months = dt.datetime(2017, 8, 23) - dt.timedelta(days=365)
-    # date_query = session.query(Measurement.date, Measurement.prcp).\
-    #     filter(Measurement.date>=last_twelve_months).\
-    #     order_by(Measurement.date).all()
-
-    # prcp_dictionary = {}
-    # for prcp in response:
-    #     prcpdict = {prcp.date: prcp.prcp}
-    #     prcpdata.update(prcpdict)
-    # return jsonify(prcp_dictionary)
+    all_prcp = []
+    for date, prcp in prcp_data:
+        prcp_data_dict = {}
+        prcp_data_dict["date"] = date
+        prcp_data_dict["prcp"] = prcp
+        all_prcp.append(prcp_data_dict)
+    return jsonify(all_prcp)
 
 #Stations route
 @app.route("/api/v1.0/stations")
 def stations():
-    stations = session.query(Station.name).all()
-    station_list = list(np.ravel(stations))
-    return jsonify (station_list)
+    station_data = session.query(Station.name).all()
+
+    all_stations = []
+    for name in station_data:
+        station_data_dict = {}
+        station_data_dict["name"] = name
+        all_stations.append(station_data_dict)
+    return jsonify (station_data)
 
 #Temperature route
-@app.route("/api/v1.0/tobs")
-def tobs():
-    tempdict = {}
-    # get latest date
-    latestdate = session.query(func.max(Measurement.date)).first()
-    for date in latestdate:
-        daten = dt.datetime.strptime(date,'%Y-%m-%d').date()
-    # find what one year before the latest date is
-    oneyearbefore = daten - dt.timedelta(days=365)
-    # query data for the data from the last year
-    response = session.query(Measurement.date,Measurement.tobs).filter(Measurement.date >= oneyearbefore).all()
-    for record in response:
-        recdict = {record.date: record.tobs}
-        tempdict.update(recdict)
-    session.close()
-    return jsonify(tempdict)
+# @app.route("/api/v1.0/tobs")
+# def tobs():
+
 
 
 # @app.route("/api/v1.0/tobs")
@@ -123,7 +103,6 @@ def tobs():
 
 
 # #################################################
-# 
 if __name__ == '__main__':
     app.run(debug=True)
 
